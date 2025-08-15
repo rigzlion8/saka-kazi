@@ -5,7 +5,7 @@ export interface PaymentDocument extends Omit<PaymentType, '_id'>, Document {}
 
 const paymentSchema = new Schema<PaymentDocument>({
   order_id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'Order',
     required: true
   },
