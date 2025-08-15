@@ -1,21 +1,21 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { Order as OrderType, OrderStatus, PaymentStatus } from '@/types';
 
-export interface OrderDocument extends OrderType, Document {}
+export interface OrderDocument extends Omit<OrderType, '_id'>, Document {}
 
 const orderSchema = new Schema<OrderDocument>({
   user_id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true
   },
   provider_id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true
   },
   service_id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'Service',
     required: true
   },
