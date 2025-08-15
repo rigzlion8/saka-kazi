@@ -67,7 +67,7 @@ const userSchema = new Schema<UserDocument>({
   }
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
-  toJSON: { virtuals: true, transform: (doc, ret) => {
+  toJSON: { virtuals: true, transform: (doc, ret: any) => {
     delete ret.password_hash;
     return ret;
   }},
