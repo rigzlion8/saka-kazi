@@ -1,6 +1,8 @@
 import jwt, { SignOptions, Secret } from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest } from 'next/server';
 import { UserRole } from '@/types';
+import crypto from 'crypto';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || '7d';
@@ -17,6 +19,19 @@ export interface JWTPayload {
   exp: number;
 }
 
+export interface PasswordResetToken {
+  token: string;
+  expiresAt: Date;
+  userId: string;
+}
+
+export interface EmailVerificationToken {
+  token: string;
+  expiresAt: Date;
+  userId: string;
+}
+
+// Token generation
 export function generateToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
   const options: SignOptions = {
     expiresIn: JWT_EXPIRES_IN as any,
@@ -24,6 +39,15 @@ export function generateToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string 
   return jwt.sign(payload, JWT_SECRET as Secret, options);
 }
 
+export function generatePasswordResetToken(userId: string): string {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+export function generateEmailVerificationToken(userId: string): string {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+// Token verification
 export function verifyToken(token: string): JWTPayload {
   try {
     return jwt.verify(token, JWT_SECRET) as JWTPayload;
@@ -32,6 +56,7 @@ export function verifyToken(token: string): JWTPayload {
   }
 }
 
+// Token extraction
 export function extractTokenFromHeader(authHeader: string): string {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     throw new Error('Authorization header must start with Bearer');
@@ -40,10 +65,16 @@ export function extractTokenFromHeader(authHeader: string): string {
   return authHeader.substring(7);
 }
 
+// Request interfaces
 export interface AuthenticatedRequest extends NextApiRequest {
   user?: JWTPayload;
 }
 
+export interface AuthenticatedNextRequest extends NextRequest {
+  user?: JWTPayload;
+}
+
+// Middleware functions
 export function withAuth(handler: (req: AuthenticatedRequest, res: NextApiResponse) => Promise<void>) {
   return async (req: AuthenticatedRequest, res: NextApiResponse) => {
     try {
@@ -93,6 +124,7 @@ export function withRole(roles: UserRole[]) {
   };
 }
 
+// Role-specific middleware
 export function withAdmin(handler: (req: AuthenticatedRequest, res: NextApiResponse) => Promise<void>) {
   return withRole([UserRole.ADMIN])(handler);
 }
@@ -113,10 +145,53 @@ export function withFinance(handler: (req: AuthenticatedRequest, res: NextApiRes
   return withRole([UserRole.FINANCE])(handler);
 }
 
-export function withProviderOrCustomer(handler: (req: AuthenticatedRequest, res: NextApiResponse) => Promise<void>) {
-  return withRole([UserRole.PROVIDER, UserRole.CUSTOMER])(handler);
+// Session management
+export function createSession(userId: string, email: string, role: UserRole) {
+  const token = generateToken({ userId, email, role });
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
+  
+  return {
+    token,
+    expiresAt,
+    user: { userId, email, role }
+  };
 }
 
-export function withStaff(handler: (req: AuthenticatedRequest, res: NextApiResponse) => Promise<void>) {
-  return withRole([UserRole.ADMIN, UserRole.OPS, UserRole.FINANCE])(handler);
+export function validateSession(token: string): JWTPayload | null {
+  try {
+    return verifyToken(token);
+  } catch {
+    return null;
+  }
+}
+
+// Password validation
+export function validatePassword(password: string): { isValid: boolean; errors: string[] } {
+  const errors: string[] = [];
+  
+  if (password.length < 8) {
+    errors.push('Password must be at least 8 characters long');
+  }
+  
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Password must contain at least one uppercase letter');
+  }
+  
+  if (!/[a-z]/.test(password)) {
+    errors.push('Password must contain at least one lowercase letter');
+  }
+  
+  if (!/[0-9]/.test(password)) {
+    errors.push('Password must contain at least one number');
+  }
+  
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    errors.push('Password must contain at least one special character');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
 }

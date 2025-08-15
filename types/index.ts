@@ -13,6 +13,11 @@ export interface User {
   gold_member?: boolean;
   is_verified?: boolean;
   status: UserStatus;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
+  emailVerificationToken?: string;
+  emailVerificationExpires?: Date;
+  emailVerified: boolean;
   created_at: Date;
   updated_at: Date;
 }

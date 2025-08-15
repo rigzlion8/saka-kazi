@@ -64,11 +64,35 @@ const userSchema = new Schema<UserDocument>({
     type: String,
     enum: Object.values(UserStatus),
     default: UserStatus.ACTIVE
+  },
+  passwordResetToken: {
+    type: String,
+    default: null
+  },
+  passwordResetExpires: {
+    type: Date,
+    default: null
+  },
+  emailVerificationToken: {
+    type: String,
+    default: null
+  },
+  emailVerificationExpires: {
+    type: Date,
+    default: null
+  },
+  emailVerified: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   toJSON: { virtuals: true, transform: (doc, ret: any) => {
     delete ret.password_hash;
+    delete ret.passwordResetToken;
+    delete ret.passwordResetExpires;
+    delete ret.emailVerificationToken;
+    delete ret.emailVerificationExpires;
     return ret;
   }},
   toObject: { virtuals: true }

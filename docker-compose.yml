@@ -6,16 +6,12 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - MONGODB_URI=mongodb://mongo:27017/saka-kazi
       - REDIS_URL=redis://redis:6379
-    volumes:
-      - .:/app
-      - /app/node_modules
     depends_on:
       - mongo
       - redis
-    command: npm run dev
 
   mongo:
     image: mongo:7.0
