@@ -73,7 +73,7 @@ paymentSchema.virtual('provider', {
 // Pre-save middleware to validate order exists
 paymentSchema.pre('save', async function(next) {
   try {
-    const Order = mongoose.model('Order');
+    const Order = mongoose.model('Order') as any;
     const order = await Order.findById(this.order_id);
     
     if (!order) {
@@ -94,7 +94,7 @@ paymentSchema.pre('save', async function(next) {
 // Post-save middleware to update order payment status
 paymentSchema.post('save', async function(doc) {
   try {
-    const Order = mongoose.model('Order');
+    const Order = mongoose.model('Order') as any;
     
     if (doc.status === PaymentStatus.PAID) {
       await Order.findByIdAndUpdate(doc.order_id, {

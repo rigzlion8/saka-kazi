@@ -134,7 +134,7 @@ orderSchema.virtual('review', {
 // Pre-save middleware to validate provider is active
 orderSchema.pre('save', async function(next) {
   try {
-    const User = mongoose.model('User');
+    const User = mongoose.model('User') as any;
     const provider = await User.findById(this.provider_id);
     
     if (!provider) {

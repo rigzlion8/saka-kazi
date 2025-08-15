@@ -107,7 +107,7 @@ serviceSchema.statics.getStats = async function() {
 serviceSchema.pre('save', async function(next) {
   try {
     if (this.isModified('name') || this.isModified('category')) {
-      const existingService = await this.constructor.findOne({
+      const existingService = await (this.constructor as any).findOne({
         name: this.name,
         category: this.category,
         _id: { $ne: this._id }

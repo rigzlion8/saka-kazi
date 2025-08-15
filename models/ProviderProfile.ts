@@ -87,7 +87,7 @@ providerProfileSchema.virtual('totalOrders').get(function() {
 // Pre-save middleware to ensure user is a provider
 providerProfileSchema.pre('save', async function(next) {
   try {
-    const User = mongoose.model('User');
+    const User = mongoose.model('User') as any;
     const user = await User.findById(this.user_id);
     
     if (!user) {
