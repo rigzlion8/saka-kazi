@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { ProviderProfile as ProviderProfileType } from '@/types';
 
-export interface ProviderProfileDocument extends ProviderProfileType, Document {}
+export interface ProviderProfileDocument extends Omit<ProviderProfileType, '_id'>, Document {}
 
 const providerProfileSchema = new Schema<ProviderProfileDocument>({
   user_id: {

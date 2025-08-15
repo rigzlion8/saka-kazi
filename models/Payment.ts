@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { Payment as PaymentType, PaymentStatus, PaymentMethod } from '@/types';
 
-export interface PaymentDocument extends PaymentType, Document {}
+export interface PaymentDocument extends Omit<PaymentType, '_id'>, Document {}
 
 const paymentSchema = new Schema<PaymentDocument>({
   order_id: {

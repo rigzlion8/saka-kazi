@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { User as UserType, UserRole, UserStatus } from '@/types';
 
-export interface UserDocument extends UserType, Document {
+export interface UserDocument extends Omit<UserType, '_id'>, Document {
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
