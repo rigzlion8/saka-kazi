@@ -16,7 +16,6 @@ const userSchema = new Schema<UserDocument>({
   email: {
     type: String,
     required: [true, 'Email is required'],
-    unique: true,
     lowercase: true,
     trim: true,
     match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
@@ -24,7 +23,6 @@ const userSchema = new Schema<UserDocument>({
   phone: {
     type: String,
     required: [true, 'Phone number is required'],
-    unique: true,
     trim: true,
     match: [/^(\+254|0)[17]\d{8}$/, 'Please enter a valid Kenyan phone number']
   },

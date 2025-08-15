@@ -7,13 +7,11 @@ const paymentSchema = new Schema<PaymentDocument>({
   order_id: {
     type: Schema.Types.ObjectId,
     ref: 'Order',
-    required: true,
-    unique: true
+    required: true
   },
   paystack_id: {
     type: String,
-    required: true,
-    unique: true
+    required: true
   },
   amount: {
     type: Number,

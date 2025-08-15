@@ -10,7 +10,11 @@ export const metadata: Metadata = {
   description: 'Connect with verified service providers for all your professional needs. From electrical work to repairs, find the right expert for your project.',
   keywords: 'services, professionals, marketplace, repairs, electrical, plumbing, Kenya, reliable, affordable, quality, efficient',
   authors: [{ name: 'Saka-Kazi Team' }],
-  viewport: 'width=device-width, initial-scale=1',
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
