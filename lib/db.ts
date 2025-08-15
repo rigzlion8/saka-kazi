@@ -23,7 +23,6 @@ async function connectDB() {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
       bufferCommands: false,
-      bufferMaxEntries: 0,
     });
 
     connection.isConnected = db.connections[0].readyState;
