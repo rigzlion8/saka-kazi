@@ -5,7 +5,7 @@ export interface ProviderProfileDocument extends Omit<ProviderProfileType, '_id'
 
 const providerProfileSchema = new Schema<ProviderProfileDocument>({
   user_id: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true,
     unique: true
