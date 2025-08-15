@@ -1,9 +1,9 @@
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions, Secret } from 'jsonwebtoken';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { UserRole } from '@/types';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_EXPIRES_IN: string = process.env.JWT_EXPIRES_IN || '7d';
 
 if (!JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not defined');
@@ -18,9 +18,10 @@ export interface JWTPayload {
 }
 
 export function generateToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
-  return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: JWT_EXPIRES_IN,
-  });
+  const options: SignOptions = {
+    expiresIn: JWT_EXPIRES_IN as any,
+  };
+  return jwt.sign(payload, JWT_SECRET as Secret, options);
 }
 
 export function verifyToken(token: string): JWTPayload {
