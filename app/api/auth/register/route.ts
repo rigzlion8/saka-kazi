@@ -1,0 +1,93 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { connectDB } from '@/lib/db';
+import { User } from '@/models/User';
+import { generateToken } from '@/lib/auth';
+import Joi from 'joi';
+
+const registerSchema = Joi.object({
+  name: Joi.string().min(2).max(100).required(),
+  email: Joi.string().email().required(),
+  phone: Joi.string().pattern(/^(\+254|0)[17]\d{8}$/).required(),
+  password: Joi.string().min(6).required(),
+  role: Joi.string().valid('customer', 'provider').default('customer')
+});
+
+export async function POST(request: NextRequest) {
+  try {
+    await connectDB();
+    
+    const body = await request.json();
+    
+    // Validate request body
+    const { error, value } = registerSchema.validate(body);
+    if (error) {
+      return NextResponse.json(
+        { success: false, error: error.details[0].message },
+        { status: 400 }
+      );
+    }
+
+    const { name, email, phone, password, role } = value;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({
+      $or: [{ email }, { phone }]
+    });
+
+    if (existingUser) {
+      return NextResponse.json(
+        { success: false, error: 'User with this email or phone already exists' },
+        { status: 409 }
+      );
+    }
+
+    // Create new user
+    const user = new User({
+      name,
+      email,
+      phone,
+      password_hash: password, // Will be hashed by pre-save middleware
+      role
+    });
+
+    await user.save();
+
+    // Generate JWT token
+    const token = generateToken({
+      userId: user._id.toString(),
+      email: user.email,
+      role: user.role
+    });
+
+    // Return user data and token
+    const userResponse = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      avatar_url: user.avatar_url,
+      location: user.location,
+      gold_member: user.gold_member,
+      is_verified: user.is_verified,
+      status: user.status,
+      created_at: user.created_at
+    };
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        user: userResponse,
+        token
+      },
+      message: 'User registered successfully'
+    });
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
