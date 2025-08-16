@@ -150,6 +150,11 @@ userSchema.methods.comparePassword = async function(candidatePassword: string): 
 userSchema.pre('save', async function(next) {
   if (!this.isModified('password_hash')) return next();
   
+  // Check if password is already hashed (starts with $2b$)
+  if (this.password_hash && this.password_hash.startsWith('$2b$')) {
+    return next();
+  }
+  
   try {
     const salt = await bcrypt.genSalt(12);
     this.password_hash = await bcrypt.hash(this.password_hash, salt);

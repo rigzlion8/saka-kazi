@@ -7,9 +7,24 @@ import Joi from 'joi';
 const registerSchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
   email: Joi.string().email().required(),
-  phone: Joi.string().pattern(/^(\+254|0)[17]\d{8}$/).required(),
+  phone: Joi.string().custom((value, helpers) => {
+    // Remove spaces and validate Kenyan phone format
+    const cleanPhone = value.replace(/\s/g, '');
+    const phonePattern = /^(\+254|0)[17]\d{8}$/;
+    
+    if (!phonePattern.test(cleanPhone)) {
+      return helpers.error('any.invalid');
+    }
+    
+    return cleanPhone; // Return cleaned phone number
+  }, 'phone validation').required(),
   password: Joi.string().min(6).required(),
-  role: Joi.string().valid('customer', 'provider').default('customer')
+  role: Joi.string().valid('customer', 'provider').default('customer'),
+  location: Joi.object({
+    type: Joi.string().valid('Point').default('Point'),
+    coordinates: Joi.array().items(Joi.number()).length(2).default([0, 0]),
+    address: Joi.string().optional()
+  }).optional()
 });
 
 export async function POST(request: NextRequest) {
@@ -21,13 +36,14 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const { error, value } = registerSchema.validate(body);
     if (error) {
+      console.log('Validation error:', error.details);
       return NextResponse.json(
         { success: false, error: error.details[0].message },
         { status: 400 }
       );
     }
 
-    const { name, email, phone, password, role } = value;
+    const { name, email, phone, password, role, location } = value;
 
     // Check if user already exists
     const existingUser = await User.findOne({
@@ -47,7 +63,12 @@ export async function POST(request: NextRequest) {
       email,
       phone,
       password_hash: password, // Will be hashed by pre-save middleware
-      role
+      role,
+      location: location || {
+        type: 'Point',
+        coordinates: [0, 0],
+        address: ''
+      }
     });
 
     await user.save();

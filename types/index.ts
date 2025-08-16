@@ -20,6 +20,7 @@ export interface User {
   emailVerified: boolean;
   created_at: Date;
   updated_at: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }
 
 export interface ProviderProfile {

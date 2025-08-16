@@ -1,5 +1,13 @@
 import mongoose from 'mongoose';
 
+// Import all models to ensure they're registered
+import '@/models/User';
+import '@/models/ProviderProfile';
+import '@/models/Order';
+import '@/models/Payment';
+import '@/models/Service';
+import '@/models/Review';
+
 const MONGODB_URI = process.env.MONGODB_URI!;
 
 if (!MONGODB_URI) {

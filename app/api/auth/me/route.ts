@@ -20,9 +20,15 @@ export async function GET(request: NextRequest) {
     const decoded = verifyToken(token);
     
     // Find user by ID
-    const user = await User.findById(decoded.userId)
-      .select('-password_hash -passwordResetToken -passwordResetExpires -emailVerificationToken -emailVerificationExpires')
-      .populate('providerProfile', 'services_offered bio is_visible');
+    let user = await User.findById(decoded.userId)
+      .select('-password_hash -passwordResetToken -passwordResetExpires -emailVerificationToken -emailVerificationExpires');
+    
+    // If user is a provider, populate the provider profile
+    if (user && user.role === 'provider') {
+      user = await User.findById(decoded.userId)
+        .select('-password_hash -passwordResetToken -passwordResetExpires -emailVerificationToken -emailVerificationExpires')
+        .populate('providerProfile', 'services_offered bio is_visible');
+    }
 
     if (!user) {
       return NextResponse.json(
