@@ -12,6 +12,7 @@ import {
   Clock,
   AlertCircle
 } from 'lucide-react';
+import { formatKESAmount } from '@/lib/currency';
 
 interface DashboardProps {
   userRole: 'customer' | 'provider' | 'admin' | 'ops' | 'finance';
@@ -83,7 +84,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userRole, userData }) => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium">KES 5,000</p>
+                  <p className="font-medium">{formatKESAmount(5000)}</p>
                   <span className="badge badge-primary">In Progress</span>
                 </div>
               </div>
@@ -116,7 +117,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userRole, userData }) => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">This Month</p>
-              <p className="text-2xl font-semibold text-gray-900">KES 45,000</p>
+              <p className="text-2xl font-semibold text-gray-900">{formatKESAmount(45000)}</p>
             </div>
           </div>
         </div>
@@ -162,7 +163,7 @@ const Dashboard: React.FC<DashboardProps> = ({ userRole, userData }) => {
                   <p className="text-sm text-gray-600 mb-2">John Doe • Nairobi</p>
                   <p className="text-sm text-gray-600 mb-3">Need electrical repair for my home office</p>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium">KES 3,500</span>
+                    <span className="text-sm font-medium">{formatKESAmount(3500)}</span>
                     <button className="btn btn-sm btn-primary">Accept</button>
                   </div>
                 </div>

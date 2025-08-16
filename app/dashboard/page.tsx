@@ -16,6 +16,7 @@ import {
   AlertCircle,
   Settings
 } from 'lucide-react';
+import { formatKESAmount } from '@/lib/currency';
 
 interface DashboardStats {
   totalOrders: number;
@@ -123,7 +124,7 @@ export default function DashboardPage() {
         />
         <StatCard
           title="Total Earnings"
-          value={`₦${stats.totalEarnings.toLocaleString()}`}
+          value={formatKESAmount(stats.totalEarnings)}
           icon={DollarSign}
           color="purple"
         />
