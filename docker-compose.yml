@@ -5,22 +5,14 @@ services:
     build: .
     ports:
       - "3000:3000"
+    env_file:
+      - .env.docker
+    # Connect to external MongoDB and Redis
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      - NODE_ENV=production
-      - MONGODB_URI=mongodb://mongo:27017/saka-kazi
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - mongo
-      - redis
-
-  mongo:
-    image: mongo:7.0
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    environment:
-      - MONGO_INITDB_DATABASE=saka-kazi
+      - MONGODB_URI=mongodb://host.docker.internal:27017/saka-kazi
+      - REDIS_URL=redis://host.docker.internal:6379
 
   redis:
     image: redis:7-alpine
@@ -29,19 +21,5 @@ services:
     volumes:
       - redis_data:/data
 
-  mongo-express:
-    image: mongo-express:latest
-    ports:
-      - "8081:8081"
-    environment:
-      - ME_CONFIG_MONGODB_SERVER=mongo
-      - ME_CONFIG_MONGODB_PORT=27017
-      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=admin123
-    depends_on:
-      - mongo
-
 volumes:
-  mongo_data:
   redis_data:

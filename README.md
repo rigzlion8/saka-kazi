@@ -65,10 +65,11 @@ A comprehensive web application that connects customers with verified profession
    cd saka-kazi
    ```
 
-2. **Set up environment variables**
+2. **Set up Docker environment variables**
    ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
+   cp .env.docker.example .env.docker
+   # Edit .env.docker with your configuration
+   # Note: Use service names (mongo, redis) not localhost
    ```
 
 3. **Start with Docker Compose**
@@ -80,6 +81,12 @@ A comprehensive web application that connects customers with verified profession
    - App: http://localhost:3000
    - MongoDB: localhost:27017
    - Mongo Express: http://localhost:8081 (admin/admin123)
+
+5. **Seed the database (optional)**
+   ```bash
+   # After containers are running
+   curl -X POST http://localhost:3000/api/seed
+   ```
 
 ### Manual Setup
 

@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
 import { generateToken } from '@/lib/auth';
-import { cors, handleCors } from '@/lib/cors';
 import Joi from 'joi';
 
 const registerSchema = Joi.object({
@@ -30,10 +29,6 @@ const registerSchema = Joi.object({
 
 export async function POST(request: NextRequest) {
   try {
-    // Handle CORS preflight
-    const corsResponse = handleCors(request);
-    if (corsResponse) return corsResponse;
-    
     await connectDB();
     
     const body = await request.json();
@@ -107,8 +102,6 @@ export async function POST(request: NextRequest) {
         token
       },
       message: 'User registered successfully'
-    }, {
-      headers: cors(request)
     });
 
   } catch (error) {
@@ -120,9 +113,4 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function OPTIONS(request: NextRequest) {
-  return new NextResponse(null, {
-    status: 200,
-    headers: cors(request),
-  });
-}
+

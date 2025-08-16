@@ -84,52 +84,22 @@ export async function POST(request: NextRequest) {
       created_at: user.created_at
     };
 
-    const responseData = {
+    return NextResponse.json({
       success: true,
       data: {
         user: userResponse,
         token
       },
       message: 'Login successful'
-    };
-    
-    // Create response with CORS headers
-    const response = NextResponse.json(responseData);
-    
-    // Set CORS headers directly
-    response.headers.set('Access-Control-Allow-Origin', 'http://localhost:3001');
-    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    response.headers.set('Access-Control-Allow-Credentials', 'true');
-    
-    console.log('Login API: Response created with CORS headers');
-    
-    return response;
+    });
 
   } catch (error) {
     console.error('Login error:', error);
-    const errorResponse = NextResponse.json(
+    return NextResponse.json(
       { success: false, error: 'Internal server error' },
       { status: 500 }
     );
-    
-    // Add CORS headers to error response too
-    errorResponse.headers.set('Access-Control-Allow-Origin', 'http://localhost:3001');
-    errorResponse.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    errorResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-    errorResponse.headers.set('Access-Control-Allow-Credentials', 'true');
-    
-    return errorResponse;
   }
 }
 
-export async function OPTIONS(request: NextRequest) {
-  const response = new NextResponse(null, { status: 200 });
-  
-  response.headers.set('Access-Control-Allow-Origin', 'http://localhost:3001');
-  response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  response.headers.set('Access-Control-Allow-Credentials', 'true');
-  
-  return response;
-}
+
