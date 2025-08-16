@@ -4,6 +4,8 @@ export function cors(request: NextRequest) {
   // Get the origin from the request headers
   const origin = request.headers.get('origin') || '*';
   
+  console.log('CORS: Request origin:', origin);
+  
   // Check if the origin is allowed (you can restrict this in production)
   const allowedOrigins = [
     'http://localhost:3000',
@@ -16,13 +18,17 @@ export function cors(request: NextRequest) {
   
   const isAllowedOrigin = allowedOrigins.includes(origin) || origin === '*';
   
-  return {
+  const corsHeaders = {
     'Access-Control-Allow-Origin': isAllowedOrigin ? origin : allowedOrigins[0],
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
     'Access-Control-Allow-Credentials': 'true',
     'Access-Control-Max-Age': '86400',
   };
+  
+  console.log('CORS: Headers being set:', corsHeaders);
+  
+  return corsHeaders;
 }
 
 export function handleCors(request: NextRequest) {
