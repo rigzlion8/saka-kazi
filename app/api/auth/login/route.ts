@@ -29,14 +29,18 @@ export async function POST(request: NextRequest) {
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
+      console.log('Login failed: User not found for email:', email);
       return NextResponse.json(
         { success: false, error: 'Invalid email or password' },
         { status: 401 }
       );
     }
 
+    console.log('User found:', { email: user.email, role: user.role, status: user.status });
+
     // Check if user is active
     if (user.status !== 'active') {
+      console.log('Login failed: User status is not active:', user.status);
       return NextResponse.json(
         { success: false, error: 'Account is suspended or banned' },
         { status: 403 }
@@ -44,8 +48,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password
+    console.log('Attempting password comparison for user:', email);
     const isPasswordValid = await user.comparePassword(password);
+    console.log('Password validation result:', isPasswordValid);
+    
     if (!isPasswordValid) {
+      console.log('Login failed: Invalid password for user:', email);
       return NextResponse.json(
         { success: false, error: 'Invalid email or password' },
         { status: 401 }

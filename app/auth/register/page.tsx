@@ -17,6 +17,7 @@ import {
   Check,
   Edit
 } from 'lucide-react';
+import { config } from '@/lib/config';
 
 interface FormData {
   firstName: string;
@@ -259,7 +260,7 @@ export default function RegisterPage() {
     setLoading(true);
     
     try {
-      const response = await fetch('/api/auth/register', {
+      const response = await fetch(config.getApiUrl('/api/auth/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

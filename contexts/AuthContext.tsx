@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { JWTPayload } from '@/lib/auth';
+import { config } from '@/lib/config';
 
 interface AuthContextType {
   user: JWTPayload | null;
@@ -41,7 +42,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const validateToken = async (token: string) => {
     try {
-      const response = await fetch('/api/auth/me', {
+      const response = await fetch(config.getApiUrl('/api/auth/me'), {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

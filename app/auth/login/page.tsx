@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff, Mail, Lock, Loader2 } from 'lucide-react';
+import { config } from '@/lib/config';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -30,7 +31,7 @@ export default function LoginPage() {
     }
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch(config.getApiUrl('/api/auth/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
