@@ -5,6 +5,7 @@ import { ProviderProfile } from '@/models/ProviderProfile';
 import { Service } from '@/models/Service';
 import { Order } from '@/models/Order';
 import { Review } from '@/models/Review';
+import { cors, handleCors } from '@/lib/cors';
 import bcrypt from 'bcryptjs';
 
 // Mock data for services
@@ -299,6 +300,10 @@ function getServiceCategory(serviceName: string): string {
 
 export async function GET(request: NextRequest) {
   try {
+    // Handle CORS preflight
+    const corsResponse = handleCors(request);
+    if (corsResponse) return corsResponse;
+    
     await connectDB();
     
     const counts = {
@@ -313,6 +318,8 @@ export async function GET(request: NextRequest) {
       success: true,
       counts,
       message: 'Database status retrieved successfully'
+    }, {
+      headers: cors(request)
     });
   } catch (error) {
     console.error('Error getting database status:', error);
@@ -325,6 +332,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Handle CORS preflight
+    const corsResponse = handleCors(request);
+    if (corsResponse) return corsResponse;
+    
     await connectDB();
 
     const results = {
@@ -520,9 +531,11 @@ export async function POST(request: NextRequest) {
       results,
       credentials: {
         admin: { email: adminUser.email, password: 'admin123' },
-        customer: { email: testCustomer.email, password: 'customer123' },
+        customer: { email: testCustomer.email, password: 'admin123' },
         providers: serviceProviders.map(p => ({ email: p.email, password: 'provider123' }))
       }
+    }, {
+      headers: cors(request)
     });
 
   } catch (error) {
@@ -540,6 +553,10 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Handle CORS preflight
+    const corsResponse = handleCors(request);
+    if (corsResponse) return corsResponse;
+    
     await connectDB();
     
     // Clear all collections with better error handling
@@ -585,6 +602,8 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: 'Database cleared successfully',
       deleted: results
+    }, {
+      headers: cors(request)
     });
   } catch (error) {
     console.error('Error clearing database:', error);
@@ -597,4 +616,11 @@ export async function DELETE(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: cors(request),
+  });
 }

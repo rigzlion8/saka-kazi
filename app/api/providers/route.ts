@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { User } from '@/models/User';
+import { cors, handleCors } from '@/lib/cors';
 
 export async function GET(request: NextRequest) {
   try {
+    // Handle CORS preflight
+    const corsResponse = handleCors(request);
+    if (corsResponse) return corsResponse;
+    
     await connectDB();
     
     const { searchParams } = new URL(request.url);
@@ -58,6 +63,8 @@ export async function GET(request: NextRequest) {
           pages: Math.ceil(total / limit)
         }
       }
+    }, {
+      headers: cors(request)
     });
 
   } catch (error) {
@@ -67,4 +74,11 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+export async function OPTIONS(request: NextRequest) {
+  return new NextResponse(null, {
+    status: 200,
+    headers: cors(request),
+  });
 }
